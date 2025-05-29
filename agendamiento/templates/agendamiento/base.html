@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,8 +7,16 @@
     <title>{% block title %}Sistema de Agendamiento{% endblock %}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { padding-top: 20px; padding-bottom: 20px; font-family: sans-serif; }
-        .container { max-width: 960px; }
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            font-family: sans-serif;
+            background-image: url("{% static 'agendamiento/img/fondoCPT.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container-lg { max-width: 1200px; margin-top: 30px; margin-bottom: 30px; background: rgba(255,255,255,0.97); border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);}
         .header { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
         .messages .alert { margin-top: 15px; }
         .table-disponibilidad th, .table-disponibilidad td { text-align: center; vertical-align: middle; }
@@ -16,14 +25,15 @@
         .bloque-reservado-por-mi { background-color: #ffeeba; color: #856404; }
         .bloque-disponible { background-color: #d4edda; color: #155724; }
         .bloque-disponible a { color: #155724; text-decoration: underline; }
-        .form-check-input { margin-left: 0.25rem; } /* Ajuste para checkboxes */
+        .form-check-input { margin-left: 0.25rem; }
         .card { margin-bottom: 20px; }
         .nav-pills .nav-link.active { background-color: #007bff; }
         .nav-pills .nav-link { color: #007bff; }
+        main { padding: 20px 30px; }
     </style>
 </head>
 <body>
-   <div class="container-fluid" style="max-width: 1200px; margin: 0 auto;">
+    <div class="container-lg">
         <header class="header d-flex justify-content-between align-items-center">
             <h3>Sistema de Agendamiento de Vehículos</h3>
             <nav>
