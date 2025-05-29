@@ -1,4 +1,3 @@
-# proyecto_principal/urls.py (o como se llame tu directorio de proyecto)
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect

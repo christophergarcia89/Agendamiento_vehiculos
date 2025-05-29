@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'agendamiento',
     'crispy_forms',
+    'agendamiento.apps.AgendamientoConfig',
 ]
 
 MIDDLEWARE = [
@@ -121,8 +121,8 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'agendamiento:login'
-LOGOUT_REDIRECT_URL = 'agendamiento:login' # A dónde ir después del logout
-LOGIN_REDIRECT_URL = 'agendamiento:seleccionar_fecha' # A dónde ir después del login exitoso
+LOGOUT_REDIRECT_URL = 'agendamiento:login'
+LOGIN_REDIRECT_URL = 'agendamiento:seleccionar_fecha'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
