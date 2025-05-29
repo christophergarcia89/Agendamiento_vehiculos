@@ -5,12 +5,12 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
-from django.http import Http404, HttpResponseForbidden, HttpResponse # Asegúrate de importar HttpResponse si lo usas directamente
-from django.urls import reverse # Importante para el redirect con namespace
+from django.http import Http404, HttpResponseForbidden, HttpResponse 
+from django.urls import reverse
 from .models import Vehiculo, UsuarioSistema, Reserva
 from .forms import FechaSeleccionForm, ReservaForm
 from datetime import date, time, timedelta, datetime
-from django.core.exceptions import ValidationError # Importar ValidationError
+from django.core.exceptions import ValidationError
 
 
 # Horarios de operación (ej: 8 AM a 6 PM, último bloque empieza a las 5 PM)
@@ -232,3 +232,21 @@ def logout_view(request):
 
 def pagina_inicio_o_perfil(request):
     return render(request, 'agendamiento/base.html', {'titulo_pagina': 'Inicio', 'mensaje_generico': 'Bienvenido al sistema.'})
+
+@login_required
+def mis_reservas_view(request):
+    perfil_usuario = request.user.perfil_sistema
+    reservas = Reserva.objects.filter(usuario=perfil_usuario).order_by('-fecha_reserva', '-hora_inicio_reserva')
+
+    if request.method == 'POST':
+        reserva_id = request.POST.get('reserva_id')
+        reserva = get_object_or_404(Reserva, id=reserva_id, usuario=perfil_usuario)
+        reserva.delete()
+        messages.success(request, "Reserva eliminada correctamente.")
+        return redirect('agendamiento:mis_reservas')
+
+    context = {
+        'reservas': reservas,
+        'titulo_pagina': "Mis Reservas"
+    }
+    return render(request, 'agendamiento/mis_reservas.html', context)

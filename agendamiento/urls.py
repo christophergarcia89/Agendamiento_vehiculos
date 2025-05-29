@@ -36,4 +36,5 @@ urlpatterns = [
     path('reservar/<int:vehiculo_id>/<str:fecha_str>/', views.reservar_vehiculo_view, name='reservar_vehiculo'),
     path('registro/', views.registro_usuario_view, name='registro'),
     path('logout/', views.logout_view, name='logout'),
+    path('mis-reservas/', views.mis_reservas_view, name='mis_reservas'),
 ]

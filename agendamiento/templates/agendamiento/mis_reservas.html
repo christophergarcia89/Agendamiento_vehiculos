@@ -1,0 +1,35 @@
+{% extends "agendamiento/base.html" %}
+{% block title %}Mis Reservas - {{ block.super }}{% endblock %}
+{% block content %}
+<h5>Mis Reservas</h5>
+{% if reservas %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Vehículo</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reserva in reservas %}
+            <tr>
+                <td>{{ reserva.vehiculo.marca }} {{ reserva.vehiculo.modelo }} ({{ reserva.vehiculo.patente }})</td>
+                <td>{{ reserva.fecha_reserva|date:"d/m/Y" }}</td>
+                <td>{{ reserva.hora_inicio_reserva|time:"H:i" }} - {{ reserva.hora_fin_reserva|time:"H:i" }}</td>
+                <td>
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="reserva_id" value="{{ reserva.id }}">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar esta reserva?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">No tienes reservas registradas.</div>
+{% endif %}
+{% endblock %}

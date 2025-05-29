@@ -34,6 +34,7 @@
                         {% endif %}
                     </span>
                     <a href="{% url 'agendamiento:seleccionar_fecha' %}" class="btn btn-sm btn-outline-primary mr-2">Agendar</a>
+                    <a href="{% url 'agendamiento:mis_reservas' %}" class="btn btn-sm btn-outline-info mr-2">Mis reservas</a>
                     <a href="{% url 'agendamiento:logout' %}" class="btn btn-sm btn-outline-secondary">Cerrar Sesión</a>
                 {% else %}
                     <a href="{% url 'agendamiento:login' %}" class="btn btn-sm btn-outline-primary mr-2">Iniciar Sesión</a>
