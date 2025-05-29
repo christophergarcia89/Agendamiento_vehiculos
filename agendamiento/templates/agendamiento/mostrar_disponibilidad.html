@@ -1,0 +1,82 @@
+{% extends "agendamiento/base.html" %}
+
+{% block title %}Disponibilidad para {{ fecha_seleccionada|date:"d/m/Y" }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{% url 'agendamiento:seleccionar_fecha' %}" class="btn btn-outline-secondary">&laquo; Cambiar Fecha</a>
+</div>
+
+{% if disponibilidad_data %}
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-disponibilidad">
+        <thead class="thead-light">
+            <tr>
+                <th class="vehiculo-info">Vehículo (Patente)</th>
+                {% for hora_key, hora_display in horarios_operacion_display %}
+                    <th>{{ hora_display }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehiculo_id, data in disponibilidad_data.items %}
+            <tr>
+                <td class="vehiculo-info">
+                    <strong>{{ data.vehiculo.marca }} {{ data.vehiculo.modelo }}</strong><br>
+                    <small>{{ data.vehiculo.patente }}</small><br>
+                    <small>{{ data.vehiculo.tipo_vehiculo }}</small>
+                </td>
+                {% for hora_key, info_horario in data.horarios.items %}
+                    <td class="{% if not info_horario.disponible %}{% if info_horario.reservado_por_mi %}bloque-reservado-por-mi{% else %}bloque-reservado{% endif %}{% else %}bloque-disponible{% endif %}">
+                        {% if info_horario.disponible %}
+                            <a href="{% url 'agendamiento:reservar_vehiculo' vehiculo_id=data.vehiculo.id fecha_str=fecha_seleccionada|date:'Y-m-d' %}?hora_inicio={{ hora_key }}" 
+                               title="Reservar este vehículo para el bloque {{ info_horario.display }}">
+                               Disponible
+                            </a>
+                        {% else %}
+                            {{ info_horario.texto_reserva }}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% comment %} Se elimina el siguiente bloque que causaba el error NoReverseMatch:
+<p class="mt-3">
+    <a href="{% url 'agendamiento:reservar_vehiculo' vehiculo_id='dummy' fecha_str=fecha_seleccionada|date:'Y-m-d' %}" 
+       id="enlaceReservaGeneral" 
+       class="btn btn-info">
+       Ir a reservar (seleccione un vehículo y horario en la tabla o use este enlace y elija vehículo en la siguiente página)
+    </a>
+    <small class="form-text text-muted">Al hacer clic en "Disponible", será llevado a la página de reserva para ese vehículo y fecha, donde podrá seleccionar uno o más bloques.</small>
+</p>
+{% endcomment %}
+{% else %}
+    <div class="alert alert-info">
+        No hay vehículos activos de su empresa ({{ perfil_usuario.razon_social_empresa }}) para mostrar o no hay horarios configurados.
+        {% if not perfil_usuario.razon_social_empresa %}
+            <br>Parece que su perfil no tiene una razón social asignada. Por favor, contacte al administrador.
+        {% endif %}
+    </div>
+{% endif %}
+
+<script>
+// Script opcional para mejorar la UX, por ejemplo, al hacer clic en un vehículo en la tabla,
+// podría actualizar el enlace "Ir a reservar" para preseleccionar ese vehículo.
+document.addEventListener('DOMContentLoaded', function() {
+    const tablaVehiculos = document.querySelector('.table-disponibilidad');
+    // const enlaceReserva = document.getElementById('enlaceReservaGeneral'); // Ya no existe
+
+    if (tablaVehiculos /* && enlaceReserva */) { // enlaceReserva ya no es necesario aquí
+        // Este es un ejemplo muy básico. Una implementación más robusta
+        // podría llevar directamente a la página de reserva del vehículo si se hace clic en su fila.
+        // O, al hacer clic en un bloque "Disponible", ya se va a la URL correcta.
+        // El botón "Ir a reservar" es más un fallback o una alternativa.
+        // Podrías quitarlo si los enlaces en la tabla son suficientes.
+    }
+});
+</script>
+
+{% endblock %}

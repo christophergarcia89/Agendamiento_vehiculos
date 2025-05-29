@@ -1,0 +1,30 @@
+{% extends "agendamiento/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Seleccionar Fecha - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <p>Bienvenido, <strong>{{ perfil_usuario.nombre_usuario_completo }}</strong> de la empresa <strong>{{ perfil_usuario.razon_social_empresa }}</strong>.</p>
+                <p>Por favor, elija una fecha para ver la disponibilidad de vehículos.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.fecha.label_tag }}
+                    {{ form.fecha }}
+                    {% if form.fecha.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.fecha.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary mt-3 btn-block">Ver Disponibilidad</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

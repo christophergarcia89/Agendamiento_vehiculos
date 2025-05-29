@@ -1,0 +1,23 @@
+# Entorno Virtual
+venv/
+
+# Bases de datos SQLite
+*.sqlite3
+db.sqlite3
+
+# Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de configuración local (si los tienes)
+local_settings.py
+.env
+
+# Archivos de IDE
+.vscode/
+.idea/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Agendamiento{% endblock %}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding-top: 20px; padding-bottom: 20px; font-family: sans-serif; }
+        .container { max-width: 960px; }
+        .header { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .messages .alert { margin-top: 15px; }
+        .table-disponibilidad th, .table-disponibilidad td { text-align: center; vertical-align: middle; }
+        .table-disponibilidad .vehiculo-info { text-align: left; }
+        .bloque-reservado { background-color: #f8d7da; color: #721c24; }
+        .bloque-reservado-por-mi { background-color: #ffeeba; color: #856404; }
+        .bloque-disponible { background-color: #d4edda; color: #155724; }
+        .bloque-disponible a { color: #155724; text-decoration: underline; }
+        .form-check-input { margin-left: 0.25rem; } /* Ajuste para checkboxes */
+        .card { margin-bottom: 20px; }
+        .nav-pills .nav-link.active { background-color: #007bff; }
+        .nav-pills .nav-link { color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header d-flex justify-content-between align-items-center">
+            <h3>Sistema de Agendamiento de Vehículos</h3>
+            <nav>
+                {% if user.is_authenticated %}
+                    <span class="mr-3">Hola, {{ user.username }}
+                        {% if user.perfil_sistema %}
+                            ({{ user.perfil_sistema.razon_social_empresa }})
+                        {% endif %}
+                    </span>
+                    <a href="{% url 'agendamiento:seleccionar_fecha' %}" class="btn btn-sm btn-outline-primary mr-2">Agendar</a>
+                    <a href="{% url 'agendamiento:logout' %}" class="btn btn-sm btn-outline-secondary">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{% url 'agendamiento:login' %}" class="btn btn-sm btn-outline-primary mr-2">Iniciar Sesión</a>
+                    <a href="{% url 'agendamiento:registro' %}" class="btn btn-sm btn-outline-secondary">Registrarse</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if titulo_pagina %}
+            <h4 class="mb-3">{{ titulo_pagina }}</h4>
+        {% endif %}
+
+        {% if mensaje_generico %}
+            <p>{{ mensaje_generico }}</p>
+        {% endif %}
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <p class="text-center text-muted">&copy; {% now "Y" %} Sistema de Agendamiento</p>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
