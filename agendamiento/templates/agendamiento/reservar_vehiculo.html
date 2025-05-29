@@ -28,40 +28,24 @@
             {{ form.vehiculo_id }}
             {{ form.fecha_reserva }}
 
-            {% if form.fields.bloques_seleccionados %}
-                <fieldset class="mb-3">
-                    <legend class="h6">{{ form.fields.bloques_seleccionados.label }}</legend>
-                    {% for value, text in form.fields.bloques_seleccionados.field.choices %}
-                        {% with id_checkbox="id_bloques_seleccionados_"|add:forloop.counter0 %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="{{ form.fields.bloques_seleccionados.html_name }}" value="{{ value }}" id="{{ id_checkbox }}"
-                                {% if value|stringformat:"s" in form.bloques_seleccionados.value or value in form.bloques_seleccionados.value %}checked{% endif %}
-                                {% for h_info in horarios_info %}{% if h_info.valor_checkbox == value|stringformat:"s" and h_info.deshabilitado %}disabled{% endif %}{% endfor %}>
-                            <label class="form-check-label" for="{{ id_checkbox }}">
-                                {{ text }}
-                                {% for h_info in horarios_info %}
-                                    {% if h_info.valor_checkbox == value|stringformat:"s" and h_info.deshabilitado %}
-                                        <span class="badge badge-danger ml-2">Reservado</span>
-                                    {% endif %}
-                                {% endfor %}
-                            </label>
-                        </div>
-                        {% endwith %}
-                    {% endfor %}
-                    {% if form.fields.bloques_seleccionados.errors %}
-                        <div class="invalid-feedback d-block">
-                            {% for error in form.fields.bloques_seleccionados.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </fieldset>
-                <button type="submit" class="btn btn-success">Confirmar Reserva</button>
-            {% else %}
-                 <div class="alert alert-warning">
-                    No hay bloques horarios disponibles para reservar para este vehículo en esta fecha, o todos los bloques ya han sido reservados.
-                 </div>
-            {% endif %}
+            {% if form.bloques_seleccionados %}
+    <fieldset class="mb-3">
+        <legend class="h6">{{ form.bloques_seleccionados.label }}</legend>
+        {{ form.bloques_seleccionados }}
+        {% if form.bloques_seleccionados.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.bloques_seleccionados.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </fieldset>
+    <button type="submit" class="btn btn-success">Confirmar Reserva</button>
+{% else %}
+    <div class="alert alert-warning">
+        No hay bloques horarios disponibles para reservar para este vehículo en esta fecha, o todos los bloques ya han sido reservados.
+    </div>
+{% endif %}
         </form>
     </div>
 </div>

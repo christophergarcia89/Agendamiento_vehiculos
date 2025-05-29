@@ -6,46 +6,50 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 class ReservaForm(forms.Form):
-    """
-    Formulario para que los usuarios seleccionen los bloques horarios para una reserva.
-    Este formulario se generará dinámicamente en la vista.
-    Aquí definimos campos que podrían ser útiles para la validación o estructura.
-    """
     vehiculo_id = forms.IntegerField(widget=forms.HiddenInput())
     fecha_reserva = forms.DateField(widget=forms.HiddenInput())
-    # Los bloques horarios se añadirán dinámicamente como MultipleChoiceField o CheckboxSelectMultiple
-    # Ejemplo: bloques_horarios = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=[...])
+    # bloques_seleccionados se añade dinámicamente
 
     def __init__(self, *args, **kwargs):
         self.vehiculo = kwargs.pop('vehiculo', None)
         self.fecha = kwargs.pop('fecha', None)
         self.usuario_sistema = kwargs.pop('usuario_sistema', None)
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs) # Llamar a super() es buena práctica aquí
+
+        print(f"\n[DEBUG ReservaForm.__init__] Iniciando para Vehículo: {self.vehiculo}, Fecha: {self.fecha}")
 
         if self.vehiculo and self.fecha:
             self.fields['vehiculo_id'].initial = self.vehiculo.id
             self.fields['fecha_reserva'].initial = self.fecha
             
-            # Generar choices para los bloques horarios disponibles
             # Horarios de operación: 08:00 a 18:00 (configurable)
             HORARIOS_OPERACION = [time(h) for h in range(8, 18)] # 8 AM a 5 PM (último bloque empieza a las 17:00)
+            print(f"[DEBUG ReservaForm.__init__] HORARIOS_OPERACION: {HORARIOS_OPERACION}")
             
             bloques_disponibles_choices = []
-            reservas_existentes = Reserva.objects.filter(
+            
+            # Obtener reservas existentes para este vehículo y fecha
+            reservas_existentes_actuales = Reserva.objects.filter(
                 vehiculo=self.vehiculo,
                 fecha_reserva=self.fecha
             ).values_list('hora_inicio_reserva', flat=True)
+            
+            # Convertir a lista para facilitar la depuración y evitar múltiples accesos a la BD si es un QuerySet grande
+            lista_horas_reservadas = list(reservas_existentes_actuales)
+            print(f"[DEBUG ReservaForm.__init__] Horas ya reservadas (BD): {lista_horas_reservadas}")
 
             for hora_inicio in HORARIOS_OPERACION:
                 hora_fin = (datetime.combine(date.today(), hora_inicio) + timedelta(hours=1)).time()
                 label = f"{hora_inicio.strftime('%H:%M')} - {hora_fin.strftime('%H:%M')}"
-                if hora_inicio in reservas_existentes:
-                    # Opción para deshabilitar o marcar como no disponible
-                    # Por ahora, simplemente no lo añadimos como elegible si ya está reservado
-                    # O se podría añadir pero deshabilitado en el widget (requiere JS o un widget custom)
-                    pass # No añadir si ya está reservado por CUALQUIER usuario
-                else:
+                
+                # Comprobar si esta hora_inicio está en la lista de horas ya reservadas
+                if hora_inicio not in lista_horas_reservadas:
                     bloques_disponibles_choices.append((hora_inicio.strftime('%H:%M:%S'), label))
+                    print(f"[DEBUG ReservaForm.__init__] Añadiendo choice disponible: {label}")
+                else:
+                    print(f"[DEBUG ReservaForm.__init__] Hora {hora_inicio.strftime('%H:%M')} ya está reservada, no se añade como choice.")
+            
+            print(f"[DEBUG ReservaForm.__init__] Choices generados para el formulario: {bloques_disponibles_choices}")
             
             if bloques_disponibles_choices:
                 self.fields['bloques_seleccionados'] = forms.MultipleChoiceField(
@@ -54,11 +58,12 @@ class ReservaForm(forms.Form):
                     label="Seleccione los bloques horarios",
                     required=True
                 )
+                print(f"[DEBUG ReservaForm.__init__] CAMPO 'bloques_seleccionados' CREADO con {len(bloques_disponibles_choices)} opciones.")
             else:
-                # Si no hay bloques, podríamos no mostrar el campo o mostrar un mensaje.
-                # Por ahora, si no hay choices, el campo no se renderizará bien o dará error.
-                # Mejor manejar esto en la vista/template.
-                pass
+                print(f"[DEBUG ReservaForm.__init__] CAMPO 'bloques_seleccionados' NO CREADO porque la lista de choices disponibles está vacía.")
+        else:
+            print(f"[DEBUG ReservaForm.__init__] CAMPO 'bloques_seleccionados' NO CREADO porque self.vehiculo o self.fecha es None.")
+        print("[DEBUG ReservaForm.__init__] Fin de inicialización.\n")
 
 
     def clean_bloques_seleccionados(self):
