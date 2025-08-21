@@ -39,7 +39,7 @@
             <nav>
                 {% if user.is_authenticated %}
                     <span class="mr-3">Hola, {{ user.username }}
-                        {% if user.perfil_sistema %}
+                        {% if user.perfil_sistema and user.perfil_sistema.razon_social_empresa %}
                             ({{ user.perfil_sistema.razon_social_empresa }})
                         {% endif %}
                     </span>
